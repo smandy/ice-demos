@@ -19,7 +19,6 @@
 		344125C20FD8E81200C8D69C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 344125C00FD8E81200C8D69C /* CFNetwork.framework */; };
 		3448C6E90FB0144F00BFB717 /* ChatSession.ice in Sources */ = {isa = PBXBuildFile; fileRef = 3448C6E70FB0144F00BFB717 /* ChatSession.ice */; };
 		3448C6EA0FB0144F00BFB717 /* Chat.ice in Sources */ = {isa = PBXBuildFile; fileRef = 3448C6E80FB0144F00BFB717 /* Chat.ice */; };
-		34885B281227EF480060DE41 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34885B271227EF480060DE41 /* ExternalAccessory.framework */; };
 		34885B651227EF9F0060DE41 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34885B641227EF9F0060DE41 /* CoreGraphics.framework */; };
 		348A1EDD0E82976B003DBDDD /* ChatController.m in Sources */ = {isa = PBXBuildFile; fileRef = 348A1EDC0E82976B003DBDDD /* ChatController.m */; };
 		348A1EE00E829786003DBDDD /* UserController.m in Sources */ = {isa = PBXBuildFile; fileRef = 348A1EDF0E829786003DBDDD /* UserController.m */; };
@@ -29,7 +28,23 @@
 		34BB759D0E87DBC000813E0B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 34BB759C0E87DBC000813E0B /* icon.png */; };
 		826C67A01737F87200059EAA /* cacert.der in Resources */ = {isa = PBXBuildFile; fileRef = 826C679F1737F87200059EAA /* cacert.der */; };
 		82D3968A1822FD78000BA551 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82D396891822FD78000BA551 /* Images.xcassets */; };
+		D8CBA10F1D91C09400C15B76 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34885B271227EF480060DE41 /* ExternalAccessory.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		D8CBA10E1D91C04700C15B76 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.ice";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(PROJECT_DIR)/generated/$(INPUT_FILE_BASE).h",
+				"$(PROJECT_DIR)/generated/$(INPUT_FILE_BASE).m",
+			);
+			script = "#!/bin/bash\n# For Xcode < 8 we still use the Xcode plug-in\nif [ \"$XCODE_VERSION_MAJOR\" = \"0800\" ]; then\n    if [ -x /usr/local/bin/icebuilder ]; then\n        /usr/local/bin/icebuilder\n    else\n        echo \"Unable to find Ice Builder for Xcode. Visit https://github.com/zeroc-ice/ice-builder-xcode for installation instructions.\"\n        exit 1\n    fi\nfi";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		14060BDC161D606E0077BEE0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -68,11 +83,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8CBA10F1D91C09400C15B76 /* ExternalAccessory.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				344125C10FD8E81200C8D69C /* Security.framework in Frameworks */,
 				344125C20FD8E81200C8D69C /* CFNetwork.framework in Frameworks */,
-				34885B281227EF480060DE41 /* ExternalAccessory.framework in Frameworks */,
 				34885B651227EF9F0060DE41 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -176,6 +191,7 @@
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 			);
 			buildRules = (
+				D8CBA10E1D91C04700C15B76 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -190,7 +206,12 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0800;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						ProvisioningStyle = Manual;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "chat" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -260,6 +281,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -271,10 +294,16 @@
 					generated,
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "-objc-arc-exceptions";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lIceObjc-libc++",
+					"-lGlacier2Objc-libc++",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zeroc.ChatDemo;
 				PRODUCT_NAME = Chat;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SLICE_INCLUDE_PATH = Classes;
@@ -292,6 +321,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = chat_Prefix.pch;
 				GCC_VERSION = "";
@@ -301,10 +332,16 @@
 					generated,
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "-objc-arc-exceptions";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lIceObjc-libc++",
+					"-lGlacier2Objc-libc++",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zeroc.ChatDemo;
 				PRODUCT_NAME = Chat;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SLICE_INCLUDE_PATH = Classes;
@@ -314,9 +351,26 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "$(IDENTIFIER)";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -326,9 +380,25 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "$(IDENTIFIER)";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				SDKROOT = iphoneos;
 			};
