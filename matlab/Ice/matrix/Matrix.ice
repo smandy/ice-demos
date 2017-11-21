@@ -9,7 +9,7 @@
 module Demo
 {
     enum MatrixType { RowMajor, ColumnMajor }
-    
+
     sequence<double> DoubleSeq;
 
     interface Matrix
