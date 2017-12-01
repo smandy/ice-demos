@@ -25,16 +25,16 @@ class Client(Ice.Application):
             return 1
 
         # Fetch a matrix from the server
-        data, major, axisLength = matrix.fetchData()
+        matrixData = matrix.fetchData()
 
         # Numpy uses 'C' for row-major arrays, and 'F' for column-major
-        if major == Demo.MatrixType.RowMajor:
+        if matrixData.type == Demo.MatrixType.RowMajor:
             major = 'C'
-        elif major == Demo.MatrixType.ColumnMajor:
+        elif matrixData.type == Demo.MatrixType.ColumnMajor:
             major = 'F'
 
         # Convert the data to a numpy-array
-        data = np.asarray(data, order=major).reshape((axisLength, -1), order=major)
+        data = np.asarray(matrixData.elements, order=major).reshape((matrixData.axisLength, -1), order=major)
         # Convert the numpy-array into a numpy-matrix
         data = np.matrix(data)
 

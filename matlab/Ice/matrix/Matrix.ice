@@ -12,8 +12,15 @@ module Demo
 
     sequence<double> DoubleSeq;
 
+    struct MatrixData
+    {
+        DoubleSeq elements;
+        MatrixType type;
+        int axisLength;
+    }
+
     interface Matrix
     {
-        DoubleSeq fetchData(out MatrixType type, out int axisLength);
+        MatrixData fetchData();
     }
 }

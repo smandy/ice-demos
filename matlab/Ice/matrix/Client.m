@@ -16,18 +16,19 @@ classdef Client
             end
 
             % Fetch a matrix from the server
-            [data, major, axisLength] = matrix.fetchData();
+            matrixData = matrix.fetchData();
 
-            % Convert the data into a MATLAB matrix
-            if(major == Demo.MatrixType.ColumnMajor)
-                data = reshape(data, axisLength, []);
-            elseif(major == Demo.MatrixType.RowMajor)
-                data = reshape(data, axisLength, []).';
+            % Convert the data into a matlab matrix
+            if(matrixData.type == Demo.MatrixType.ColumnMajor)
+                data = reshape(matrixData.elements, matrixData.axisLength, []);
+            elseif(matrixData.type == Demo.MatrixType.RowMajor)
+                % .' is shorthand for the transpose
+                data = reshape(matrixData.elements, matrixData.axisLength, []).';
             end
 
             % Print out the dimensions and elements of the matrix
             [w, h] = size(data);
-            fprintf('Received %d by %d matrix:\n', w, h);
+            fprintf('Recieved %d by %d matrix:\n', w, h);
             disp(data);
 
             % Compute some properties of the matrix

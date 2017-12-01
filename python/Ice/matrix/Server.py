@@ -15,9 +15,15 @@ import Demo
 class MatrixI(Demo.Matrix):
     def fetchData(self, current=None):
         axisLength = random.randint(1, 5)
-        data = random.uniform(low=-5, high=5, size=(axisLength * random.randint(1, 5)))
 
-        return (data, Demo.MatrixType.RowMajor, axisLength)
+        if random.choice([True, False]):
+            type = Demo.MatrixType.RowMajor
+        else:
+            type = Demo.MatrixType.ColumnMajor
+
+        elements = random.uniform(low=-5, high=5, size=(axisLength * random.randint(1, 5)))
+
+        return Demo.MatrixData(elements, type, axisLength)
 
 class Server(Ice.Application):
     def run(self, args):
