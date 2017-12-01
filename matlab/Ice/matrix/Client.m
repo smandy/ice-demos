@@ -28,7 +28,7 @@ classdef Client
 
             % Print out the dimensions and elements of the matrix
             [w, h] = size(data);
-            fprintf('Recieved %d by %d matrix:\n', w, h);
+            fprintf('Received %d by %d matrix:\n', w, h);
             disp(data);
 
             % Compute some properties of the matrix
